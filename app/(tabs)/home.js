@@ -74,11 +74,6 @@ const Home = () => {
         renderItem={renderTask}
         contentContainerStyle={styles.list}
       />
-
-      {/* Logout Button */}
-      <TouchableOpacity style={styles.button} onPress={userLogout}>
-        <Text style={styles.buttonText}>Logout</Text>
-      </TouchableOpacity>
     </View>
   );
 };
