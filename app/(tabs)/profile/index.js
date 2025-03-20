@@ -17,7 +17,7 @@ const NurseProfile = () => {
     name: "Jane Doe",
     role: "Registered Nurse",
     id: "RN123456",
-    image: "https://randomuser.me/api/portraits/men/18.jpg", // Placeholder image URL
+    image: "https://avatar.iran.liara.run/public/27", // Placeholder image URL
   };
  const { removeToken } = useContext(AuthContext);
   const handleChangeImage = () => {
@@ -106,7 +106,7 @@ const NurseProfile = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#039be5",
+    backgroundColor: "#fa1e7d",
     position: "relative",
   },
   header:{

@@ -15,7 +15,7 @@ const ProfileDetails = () => {
     email: "janedoe@nurseapp.com",
     phone: "+1 987-654-3210",
     address: "123 Healthcare St, New York, USA",
-    image: "https://randomuser.me/api/portraits/men/18.jpg",
+    image: "https://avatar.iran.liara.run/public/27",
   };
 
   return (

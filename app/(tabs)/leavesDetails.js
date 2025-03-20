@@ -10,11 +10,18 @@ import {
 } from "react-native";
 import CustomModel from "../../components/CustomModel";
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { LinearGradient } from "expo-linear-gradient";
 const leaveData = [
   { id: "1", type: "Sick Leave", from: "March 1, 2025", to: "March 3, 2025", status: "Approved", reason: "High fever and doctor's recommendation" },
   { id: "2", type: "Casual Leave", from: "March 10, 2025", to: "March 11, 2025", status: "Pending", reason: "Family function" },
   { id: "3", type: "Emergency Leave", from: "March 15, 2025", to: "March 16, 2025", status: "Rejected", reason: "Not enough staff availability" },
   { id: "4", type: "Vacation", from: "April 5, 2025", to: "April 10, 2025", status: "Approved", reason: "Annual leave" },
+];
+const leaveGradients = [
+  ["#6D80FE", "#23D2FD"], // Orange-Red
+  ["#FF998B", "#FF6D88"], // Purple-Blue
+  ["#09AFE8", "#29F499"], // Green-Blue
+  ["#FA81E8", "#707CFF"], // Red-Pink
 ];
 
 const leaveSummary = {
@@ -23,7 +30,12 @@ const leaveSummary = {
   leaveAvailable: 12,
   totalHolidays: 10,
 };
-
+const leaveSummaryData = [
+  { title: "Total Allocated", value: leaveSummary.totalAllocated },
+  { title: "Leave Taken", value: leaveSummary.leaveTaken },
+  { title: "Leave Available", value: leaveSummary.leaveAvailable },
+  { title: "Total Holidays", value: leaveSummary.totalHolidays },
+];
 const getStatusColor = (status) => {
   switch (status) {
     case "Approved": return "#28A745";
@@ -71,23 +83,19 @@ const LeaveDetails = () => {
 
       {/* Leave Summary */}
       <View style={styles.summaryContainer}>
-        <View style={styles.summaryCard}>
-          <Text style={styles.summaryTitle}>Total Allocated</Text>
-          <Text style={styles.summaryValue}>{leaveSummary.totalAllocated}</Text>
-        </View>
-        <View style={styles.summaryCard}>
-          <Text style={styles.summaryTitle}>Leave Taken</Text>
-          <Text style={styles.summaryValue}>{leaveSummary.leaveTaken}</Text>
-        </View>
-        <View style={styles.summaryCard}>
-          <Text style={styles.summaryTitle}>Leave Available</Text>
-          <Text style={styles.summaryValue}>{leaveSummary.leaveAvailable}</Text>
-        </View>
-        <View style={styles.summaryCard}>
-          <Text style={styles.summaryTitle}>Total Holidays</Text>
-          <Text style={styles.summaryValue}>{leaveSummary.totalHolidays}</Text>
-        </View>
-      </View>
+  {leaveSummaryData.map((item, index) => (
+    <LinearGradient
+      key={index}
+      start={{ x: 1, y: 0 }} 
+      end={{ x: 0, y: 0 }} 
+      colors={leaveGradients[index]} // Assign a unique gradient to each card
+      style={styles.summaryCard}
+    >
+      <Text style={styles.summaryTitle}>{item.title}</Text>
+      <Text style={styles.summaryValue}>{item.value}</Text>
+    </LinearGradient>
+  ))}
+</View>
 
       {/* Tab Filter */}
       <View style={styles.tabContainer} onLayout={onTabLayout}>
@@ -156,20 +164,21 @@ const styles = StyleSheet.create({
   summaryCard: {
     width: "48%",
     backgroundColor: "#FFF",
-    padding: 15,
+    padding: 12,
     borderRadius: 8,
     alignItems: "center",
-    elevation: 2,
+    elevation: 3 ,
     marginBottom: 10,
   },
   summaryTitle: {
-    fontSize: 14,
-    color: "#555",
+    fontSize: 18,
+    color: "#fff",
+    fontWeight:"600"
   },
   summaryValue: {
-    fontSize: 18,
+    fontSize: 22,
     fontWeight: "bold",
-    color: "#333",
+    color: "#fff",
     marginTop: 5,
   },
   tabContainer: {

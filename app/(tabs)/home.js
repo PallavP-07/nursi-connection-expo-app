@@ -4,130 +4,185 @@ import {
   Text,
   StyleSheet,
   FlatList,
-  Image,
   TouchableOpacity,
 } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Calendar } from "react-native-calendars";
+import moment from "moment";
+import { Image } from "react-native";
 
-// Dummy Nurse Profile
-const nurseProfile = {
-  id: "1",
-  name: "John Doe",
-  role: "Senior Nurse - Night Shift",
-  image: "https://randomuser.me/api/portraits/men/1.jpg",
+// Dummy Data - Replace with API Response
+const allShiftData = Array.from({ length: 15 }, (_, index) => ({
+  shift_time: index % 2 === 0 ? "N" : "M",
+  full_date: moment().add(index, "days").format("YYYY-MM-DD"),
+  shift_time_full: index % 2 === 0 ? "Night (7PM-7AM)" : "Morning (7AM-7PM)",
+}));
+
+// Colors for Shift Types
+const shiftColors = {
+  N: ["#007BFF", "#0056b3"], // Blue for Night Shift
+  M: ["#28A745", "#1f7d3f"], // Green for Morning Shift
 };
-
-// Dummy Weekly Shift Data
-const weeklyShifts = [
-  {
-    id: "1",
-    shiftName: "Morning Shift",
-    time: "8:00 AM - 4:00 PM",
-    days: ["Mon", "Tue", "Wed", "Thu", "Fri"],
-    color: "#28A745", // Green
-  },
-  {
-    id: "2",
-    shiftName: "Evening Shift",
-    time: "2:00 PM - 10:00 PM",
-    days: ["Mon", "Tue", "Wed", "Thu", "Fri"],
-    color: "#FFA500", // Orange
-  },
-  {
-    id: "3",
-    shiftName: "Night Shift",
-    time: "10:00 PM - 6:00 AM",
-    days: ["Sat", "Sun"],
-    color: "#007BFF", // Blue
-  },
-];
 
 const Home = () => {
   const [selectedDate, setSelectedDate] = useState("");
   const [showCalendar, setShowCalendar] = useState(false);
+  const [displayCount, setDisplayCount] = useState(10);
+  const [filterType, setFilterType] = useState("all"); // all | day | week | month
+  const [showFilterDropdown, setShowFilterDropdown] = useState(false);
 
-  // Render Weekly Shift Item
-  const renderShift = ({ item }) => (
-    <View style={[styles.shiftCard, { borderLeftColor: item.color }]}>
-      <Text style={styles.shiftTitle}>{item.shiftName}</Text>
-      <Text style={styles.shiftTime}>{item.time}</Text>
+  const getFilteredShifts = () => {
+    let filteredData = [...allShiftData];
+    if (selectedDate) {
+      filteredData = filteredData.filter(
+        (shift) => shift.full_date === selectedDate
+      );
+    } else if (filterType === "week") {
+      const startOfWeek = moment().startOf("isoWeek");
+      const endOfWeek = moment().endOf("isoWeek");
+      filteredData = filteredData.filter((shift) =>
+        moment(shift.full_date).isBetween(startOfWeek, endOfWeek, "day", "[]")
+      );
+    } else if (filterType === "month") {
+      const currentMonth = moment().format("YYYY-MM");
+      filteredData = filteredData.filter((shift) =>
+        shift.full_date.startsWith(currentMonth)
+      );
+    }
+    return filteredData.slice(0, displayCount);
+  };
 
-      {/* Days in a Row */}
-      <View style={styles.dayContainer}>
-        {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((day) => (
-          <View
-            key={day}
-            style={[
-              styles.dayBox,
-              item.days.includes(day) ? styles.activeDay : styles.inactiveDay,
-            ]}
-          >
-            <Text
-              style={[
-                styles.dayText,
-                item.days.includes(day) ? styles.activeDayText : styles.inactiveDayText,
-              ]}
-            >
-              {day}
-            </Text>
+  const filteredShifts = getFilteredShifts();
+
+  const renderShift = ({ item }) => {
+    const dayShort = moment(item.full_date).format("ddd"); // Mon, Tue, etc.
+    const dateNumber = moment(item.full_date).format("D"); // 20, 21, etc.
+    const monthShort = moment(item.full_date).format("MMM"); // Mar, Apr, etc.
+
+    return (
+      <View style={styles.cardWrapper}>
+        <View
+          style={[
+            styles.shiftCard,
+            { borderLeftColor: shiftColors[item.shift_time][0] },
+          ]}
+        >
+          <View style={styles.dateContainer}>
+            <Text style={styles.dayText}>{dayShort}</Text>
+            <Text style={styles.dateText}>{dateNumber}</Text>
+            <Text style={styles.monthText}>{monthShort}</Text>
           </View>
-        ))}
+          <View style={styles.shiftInfo}>
+            <Text style={styles.shiftTime}>{item.shift_time_full}</Text>
+          </View>
+          <View style={styles.shiftAction}>
+            <TouchableOpacity style={styles.actionButton}>
+              <Ionicons name="checkmark-circle" size={28} color="green" />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.actionButton}>
+              <Ionicons name="close-circle" size={28} color="red" />
+            </TouchableOpacity>
+          </View>
+        </View>
       </View>
-    </View>
-  );
+    );
+  };
 
   return (
     <View style={styles.container}>
-      {/* Header Section */}
-      <View style={styles.header}>
-        {/* Profile Section */}
-        <View style={styles.profileContainer}>
-          <Image source={{ uri: nurseProfile.image }} style={styles.image} />
-          <View>
-            <Text style={styles.name}>{nurseProfile.name}</Text>
-            <Text style={styles.role}>{nurseProfile.role}</Text>
-          </View>
+      <View style={styles.nurseInfo}>
+        <Image
+          source={{ uri: "https://avatar.iran.liara.run/public/27" }}
+          style={styles.nurseImage}
+        />
+        <View>
+          <Text style={styles.nurseName}>John Doe</Text>
+          <Text style={styles.nurseRole}>Senior Nurse</Text>
         </View>
+      </View>
+      {/* Header */}
+      <View style={styles.header}>
+        <Text style={styles.title}>Shift Schedule</Text>
 
-        {/* Icons */}
         <View style={styles.iconContainer}>
-          {/* Notification Icon */}
-          <TouchableOpacity>
-            <Ionicons name="notifications-outline" size={28} color="#333" />
-          </TouchableOpacity>
-
-          {/* Calendar Filter Icon */}
-          <TouchableOpacity onPress={() => setShowCalendar(true)}>
+          {/* Calendar Icon */}
+          <TouchableOpacity onPress={() => setShowCalendar(!showCalendar)}>
             <Ionicons name="calendar-outline" size={28} color="#333" />
           </TouchableOpacity>
+
+          {/* Filter Icon */}
+          <TouchableOpacity
+            onPress={() => setShowFilterDropdown(!showFilterDropdown)}
+            style={styles.filterIcon}
+          >
+            <Ionicons name="filter-outline" size={28} color="#333" />
+          </TouchableOpacity>
+          {showFilterDropdown && (
+        <View style={styles.filterDropdown}>
+          {["all", "day", "week", "month"].map((type) => (
+            <TouchableOpacity
+              key={type}
+              style={[
+                styles.filterOption,
+                filterType === type && styles.activeFilter,
+              ]}
+              onPress={() => {
+                setFilterType(type);
+                setShowFilterDropdown(false);
+              }}
+            >
+              <Text
+                style={[
+                  styles.filterText,
+                  filterType === type && { color: "#FFF" },
+                ]}
+              >
+                {type.toUpperCase()}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      )}
         </View>
       </View>
 
-      {/* Display Selected Month */}
-      <Text style={styles.monthText}>March 2025</Text>
+  
+     
 
       {/* Calendar Modal */}
       {showCalendar && (
         <View style={styles.calendarContainer}>
           <Calendar
             onDayPress={(day) => {
-              setSelectedDate(day.dateString);
+              setSelectedDate(
+                day.dateString === selectedDate ? "" : day.dateString
+              );
               setShowCalendar(false);
             }}
-            markedDates={{ [selectedDate]: { selected: true, selectedColor: "blue" } }}
+            markedDates={{
+              [selectedDate]: { selected: true, selectedColor: "blue" },
+            }}
           />
         </View>
       )}
 
-      {/* Shift Details */}
-      <Text style={styles.sectionTitle}>Shift Details</Text>
+      {/* Shift List */}
       <FlatList
-        data={weeklyShifts}
-        keyExtractor={(item) => item.id}
+        data={filteredShifts}
+        keyExtractor={(item) => item.full_date}
         renderItem={renderShift}
         contentContainerStyle={styles.list}
       />
+
+      {/* Load More Button */}
+      {displayCount < allShiftData.length && (
+        <TouchableOpacity
+          style={styles.loadMore}
+          onPress={() => setDisplayCount(displayCount + 5)}
+        >
+          <Text style={styles.loadMoreText}>Load More</Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 };
@@ -137,106 +192,77 @@ export default Home;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F5F5F5",
+    backgroundColor: "#F8F9FA",
     paddingHorizontal: 20,
     paddingTop: 50,
   },
+  nurseInfo: { flexDirection: "row", alignItems: "center", marginBottom: 20 },
+  nurseImage: { width: 55, height: 55, borderRadius: 25, marginRight: 16 },
+  nurseName:{fontSize:24, fontWeight:"600" },
+  nurseRole:{ fontSize:16},
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 20,
   },
-  profileContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  image: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    marginRight: 10,
-  },
-  name: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#333",
-  },
-  role: {
-    fontSize: 14,
-    color: "#777",
-  },
-  iconContainer: {
-    flexDirection: "row",
-    gap: 15,
-  },
-  monthText: {
-    fontSize: 18,
-    fontWeight: "bold",
-    textAlign: "center",
-    marginBottom: 10,
-    color: "#444",
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 10,
-    color: "#333",
-  },
-  list: {
-    paddingBottom: 20,
-  },
+  title: { fontSize: 22, fontWeight: "bold", color: "#333" },
+  iconContainer: { flexDirection: "row" },
+  filterIcon: { marginLeft: 15,position:"relative" },
+  list: { paddingBottom: 24 },
+  cardWrapper: { marginBottom: 12, elevation: 5 },
   shiftCard: {
-    backgroundColor: "#FFF",
-    padding: 15,
-    borderRadius: 10,
-    marginBottom: 10,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 2,
-    borderLeftWidth: 5,
-  },
-  shiftTitle: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#333",
-  },
-  shiftTime: {
-    fontSize: 14,
-    color: "#444",
-    marginTop: 5,
-  },
-  dayContainer: {
     flexDirection: "row",
-    marginTop: 10,
-    justifyContent: "space-between",
-  },
-  dayBox: {
-    width: 40,
-    height: 40,
-    justifyContent: "center",
     alignItems: "center",
+    backgroundColor: "#FFF",
+    padding: 18,
+    borderRadius: 12,
+    borderLeftWidth: 6,
+  },
+  dateContainer: {
+    alignItems: "center",
+    width: 60,
+    marginRight: 20,
+    borderWidth: 1.2,
+    borderColor: "#007BFF",
+    borderRadius: 14,
+    padding:4,
+  },
+  dayText: { fontSize: 16, fontWeight: "bold", color: "#222" },
+  dateText: { fontSize: 24, fontWeight: "bold", color: "#007BFF" },
+  monthText: { fontSize: 16, color: "#555" },
+  shiftInfo: { flex: 1 },
+  shiftTime: { fontSize: 16, color: "#555" },
+  shiftAction: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 10,
+  },
+  actionButton: {
+    padding: 5,
+  },
+  filterDropdown: {
+    position: "absolute",
+    top:30,
+    right: 0,
+    backgroundColor: "#F6F6F6",
     borderRadius: 10,
+    padding: 3,
+    elevation: 2,
+    zIndex: 20,
+    borderWidth: 0.4,
+    borderColor: "#808080",
   },
-  activeDay: {
-    backgroundColor: "#28A745", // Green for active days
+  filterOption: { paddingVertical: 5, paddingHorizontal: 10 },
+  activeFilter: { backgroundColor: "#007BFF", borderRadius: 10 },
+  filterText: { fontSize: 14, fontWeight: "bold", color: "#333" },
+  calendarContainer: { borderRadius: 10, overflow: "hidden", marginBottom: 10 },
+  loadMore: {
+    padding: 12,
+    backgroundColor: "#007BFF",
+    borderRadius: 8,
+    alignItems: "center",
+    marginTop: 10,
   },
-  inactiveDay: {
-    backgroundColor: "#DDD",
-  },
-  activeDayText: {
-    color: "#FFF",
-    fontWeight: "bold",
-  },
-  inactiveDayText: {
-    color: "#555",
-  },
-  calendarContainer: {
-    borderRadius: 10,
-    overflow: "hidden",
-    marginBottom: 10,
-  },
+  loadMoreText: { color: "#FFF", fontSize: 16, fontWeight: "bold" },
 });
- 
