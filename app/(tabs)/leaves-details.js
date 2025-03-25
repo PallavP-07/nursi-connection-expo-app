@@ -167,7 +167,7 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 8,
     alignItems: "center",
-    elevation: 3 ,
+    elevation: 3,
     marginBottom: 10,
   },
   summaryTitle: {

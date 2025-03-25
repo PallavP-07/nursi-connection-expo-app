@@ -14,8 +14,8 @@ import React, { useContext, useState } from "react";
 import { Stack } from "expo-router/stack";
 import { LinearGradient } from "expo-linear-gradient";
 import Feather from "@expo/vector-icons/Feather";
-import { loginAPI } from "../api/authApi";
-import { AuthContext } from "../context/authContext";
+import { loginAPI } from "../../api/authApi";
+import { AuthContext } from "../../context/authContext";
 import { router } from "expo-router";
 
 const SignIn = () => {
@@ -45,7 +45,7 @@ const SignIn = () => {
       const { access_token } = response.data;
       if (access_token) {
         await generateToken(access_token);
-        router.replace("/home");
+        router.replace("/(tabs)/home");
       }
     } catch (error) {
       console.log(error);
@@ -59,14 +59,14 @@ const SignIn = () => {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={styles.container}
     >
-      <LinearGradient style={styles.background} colors={["#030B4A", "#13357D"]}>
+      <LinearGradient style={styles.background} colors={["#1856d9", "#030B4A"]}>
         <ScrollView contentContainerStyle={styles.scrollContainer}>
           <Stack.Screen options={{ headerShown: false }} />
 
           {/* Logo Section */}
           <View style={styles.logoContainer}>
             <Image
-              source={require("../assets/images/mainLogo.png")}
+              source={require("../../assets/images/mainLogo.png")}
               style={styles.logo}
               resizeMode="contain"
             />
@@ -104,7 +104,9 @@ const SignIn = () => {
               </TouchableOpacity>
             </View>
 
-            <TouchableOpacity style={styles.forgotBtn}>
+            <TouchableOpacity style={styles.forgotBtn}
+             onPress={() => router.push("/forgot-password")}
+            >
               <Text style={styles.forgotBtnTxt}>Forgot Password?</Text>
             </TouchableOpacity>
           </View>

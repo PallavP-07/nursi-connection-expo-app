@@ -3,7 +3,6 @@ import axios from "axios";
 const BASE_URL = "https://nursi.webiknows.in/api";
 
 export const loginAPI = async ({email, password}) => {
-  console.log(email,password)
     try {
       const response = await axios.post(`${BASE_URL}/nurse/login`, {
         email,
@@ -16,4 +15,16 @@ export const loginAPI = async ({email, password}) => {
     } catch (error) {
       throw new Error(error);
     }
+  };
+
+  export const getNurseDetailsAPI = async (token) => {
+    const response = await axios.post(`${BASE_URL}/nurse/profile`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
   };

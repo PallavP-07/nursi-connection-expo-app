@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -6,10 +6,12 @@ import {
   FlatList,
   TouchableOpacity,
 } from "react-native";
-import Ionicons from "@expo/vector-icons/Ionicons";
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { Calendar } from "react-native-calendars";
 import moment from "moment";
 import { Image } from "react-native";
+import { AuthContext } from "../../context/authContext";
+import { getNurseDetailsAPI } from "../../api/authApi";
 
 // Dummy Data - Replace with API Response
 const allShiftData = Array.from({ length: 15 }, (_, index) => ({
@@ -20,19 +22,32 @@ const allShiftData = Array.from({ length: 15 }, (_, index) => ({
 
 // Colors for Shift Types
 const shiftColors = {
-  N: ["#007BFF", "#0056b3"], // Blue for Night Shift
-  M: ["#28A745", "#1f7d3f"], // Green for Morning Shift
+  N: ["#007BFF", "#0056b3"], 
+  M: ["#28A745", "#1f7d3f"], 
 };
-
+const fallbackShiftData = [
+  {
+    shift_time: "N",
+    full_date: moment().format("YYYY-MM-DD"),
+    shift_time_full: "Night (7PM-7AM)",
+  },
+  {
+    shift_time: "M",
+    full_date: moment().add(1, "days").format("YYYY-MM-DD"),
+    shift_time_full: "Morning (7AM-7PM)",
+  },
+];
 const Home = () => {
   const [selectedDate, setSelectedDate] = useState("");
   const [showCalendar, setShowCalendar] = useState(false);
   const [displayCount, setDisplayCount] = useState(10);
   const [filterType, setFilterType] = useState("all"); // all | day | week | month
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
-
+  const [nurseDetails,setNurseDetails]=useState("")
+  const [shiftData, setShiftData] = useState([]);
+    const { authToken } = useContext(AuthContext);
   const getFilteredShifts = () => {
-    let filteredData = [...allShiftData];
+    let filteredData = [...shiftData];
     if (selectedDate) {
       filteredData = filteredData.filter(
         (shift) => shift.full_date === selectedDate
@@ -77,28 +92,57 @@ const Home = () => {
           </View>
           <View style={styles.shiftAction}>
             <TouchableOpacity style={styles.actionButton}>
-              <Ionicons name="checkmark-circle" size={28} color="green" />
+             
+              <Ionicons name="checkmark-circle-outline" size={24} color="green" />
             </TouchableOpacity>
             <TouchableOpacity style={styles.actionButton}>
-              <Ionicons name="close-circle" size={28} color="red" />
+            <Ionicons name="close-circle-outline" size={24} color="red"/>
+         
             </TouchableOpacity>
           </View>
         </View>
       </View>
     );
   };
+useEffect(()=>{
+  const fetchNurseDetails = async()=>{
+    if(!authToken) return;
+    try{
+      const response = await getNurseDetailsAPI(authToken);
+      if(response.status && response.data){
+        setNurseDetails(response.data);
+        setShiftData(response.data.all_shift_data);
+      }else{
+        setShiftData(fallbackShiftData);
+      }
+    }catch(error){
+      console.log(error);
+    }
+  }
+  fetchNurseDetails();
+},[authToken]);
 
   return (
     <View style={styles.container}>
+      <View style={styles.topContainer}>
       <View style={styles.nurseInfo}>
         <Image
-          source={{ uri: "https://avatar.iran.liara.run/public/27" }}
+           source={{
+            uri: nurseDetails.imageUrl
+              ? nurseDetails.imageUrl
+              : "https://avatar.iran.liara.run/public/27"
+          }}
           style={styles.nurseImage}
         />
         <View>
-          <Text style={styles.nurseName}>John Doe</Text>
-          <Text style={styles.nurseRole}>Senior Nurse</Text>
+          <Text style={styles.nurseName}>{nurseDetails.first_name} {nurseDetails.last_name}</Text>
+          <Text style={styles.nurseRole}>{nurseDetails.email}</Text>
         </View>
+      </View>
+      <View style={styles.iconContainer}>
+      <Ionicons name="notifications-outline" size={32} color="black" />
+      <Text style={styles.badge}>{shiftData.length}</Text>
+    </View>
       </View>
       {/* Header */}
       <View style={styles.header}>
@@ -145,10 +189,6 @@ const Home = () => {
       )}
         </View>
       </View>
-
-  
-     
-
       {/* Calendar Modal */}
       {showCalendar && (
         <View style={styles.calendarContainer}>
@@ -180,6 +220,7 @@ const Home = () => {
           style={styles.loadMore}
           onPress={() => setDisplayCount(displayCount + 5)}
         >
+          <Ionicons name="chevron-down" size={28} color="#007BFF" />
           <Text style={styles.loadMoreText}>Load More</Text>
         </TouchableOpacity>
       )}
@@ -194,10 +235,26 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#F8F9FA",
     paddingHorizontal: 20,
-    paddingTop: 50,
+    paddingTop: 40,
   },
-  nurseInfo: { flexDirection: "row", alignItems: "center", marginBottom: 20 },
-  nurseImage: { width: 55, height: 55, borderRadius: 25, marginRight: 16 },
+  topContainer:{flexDirection:"row",justifyContent:"space-between",alignItems:"center",marginBottom: 20},
+  nurseInfo: { flexDirection: "row", alignItems: "center" },
+  iconContainer: {
+    position: "relative",
+  },
+  badge: {
+    position: "absolute",
+    top: -1,
+    right: -1,
+    fontSize:14,
+    backgroundColor: "red",
+    color: "white",
+    padding:0,
+    borderRadius:50,
+    width:"50%",
+    textAlign:"center"
+  },
+  nurseImage: { width: 60, height: 60, borderRadius: 50, marginRight: 16 },
   nurseName:{fontSize:24, fontWeight:"600" },
   nurseRole:{ fontSize:16},
   header: {
@@ -210,27 +267,27 @@ const styles = StyleSheet.create({
   iconContainer: { flexDirection: "row" },
   filterIcon: { marginLeft: 15,position:"relative" },
   list: { paddingBottom: 24 },
-  cardWrapper: { marginBottom: 12, elevation: 5 },
+  cardWrapper: { marginBottom: 10, elevation: 3 },
   shiftCard: {
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#FFF",
-    padding: 18,
-    borderRadius: 12,
-    borderLeftWidth: 6,
+    padding: 6,
+    borderRadius: 20,
+    borderLeftWidth: 5,
   },
   dateContainer: {
     alignItems: "center",
-    width: 60,
+    width: 50,
     marginRight: 20,
-    borderWidth: 1.2,
+    borderWidth: 1.4,
     borderColor: "#007BFF",
     borderRadius: 14,
     padding:4,
   },
-  dayText: { fontSize: 16, fontWeight: "bold", color: "#222" },
-  dateText: { fontSize: 24, fontWeight: "bold", color: "#007BFF" },
-  monthText: { fontSize: 16, color: "#555" },
+  dayText: { fontSize: 12, fontWeight: "bold", color: "#222" },
+  dateText: { fontSize: 18, fontWeight: "bold", color: "#007BFF" },
+  monthText: { fontSize: 13, color: "#555" },
   shiftInfo: { flex: 1 },
   shiftTime: { fontSize: 16, color: "#555" },
   shiftAction: {
@@ -258,11 +315,16 @@ const styles = StyleSheet.create({
   filterText: { fontSize: 14, fontWeight: "bold", color: "#333" },
   calendarContainer: { borderRadius: 10, overflow: "hidden", marginBottom: 10 },
   loadMore: {
-    padding: 12,
-    backgroundColor: "#007BFF",
+    flexDirection:"row",
+    justifyContent:"center",
+    alignItems:"center",
+    gap:1,
+    padding: 3,
+    backgroundColor:"none",
     borderRadius: 8,
+    color:"#0000",
     alignItems: "center",
-    marginTop: 10,
+    margin: 5,
   },
-  loadMoreText: { color: "#FFF", fontSize: 16, fontWeight: "bold" },
+  loadMoreText: { color: "#007BFF", fontSize: 14, fontWeight:"bold" },
 });
