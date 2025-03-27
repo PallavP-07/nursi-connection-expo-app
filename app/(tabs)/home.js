@@ -5,6 +5,7 @@ import {
   StyleSheet,
   FlatList,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Calendar } from "react-native-calendars";
@@ -40,7 +41,7 @@ const fallbackShiftData = [
 const Home = () => {
   const [selectedDate, setSelectedDate] = useState("");
   const [showCalendar, setShowCalendar] = useState(false);
-  const [displayCount, setDisplayCount] = useState(10);
+  const [displayCount, setDisplayCount] = useState(20);
   const [filterType, setFilterType] = useState("all"); // all | day | week | month
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
   const [nurseDetails,setNurseDetails]=useState("")
@@ -121,7 +122,12 @@ useEffect(()=>{
   }
   fetchNurseDetails();
 },[authToken]);
-
+if (!nurseDetails)
+  return (
+    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+      <ActivityIndicator size={60} color="#1856d9" />
+    </View>
+  );
   return (
     <View style={styles.container}>
       <View style={styles.topContainer}>

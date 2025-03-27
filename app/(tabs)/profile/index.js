@@ -111,18 +111,18 @@ const NurseProfile = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fa1e7d",
+    backgroundColor: "#1856d9",
     position: "relative",
   },
   header: {
     color: "#fafafa",
-    fontSize: 28,
+    fontSize: 22,
     zIndex: 20,
     position: "absolute",
     top: 0,
     alignSelf: "center",
-    padding: 50,
-    fontWeight: "500",
+    padding: 30,
+    fontWeight: "600",
     letterSpacing: 1,
   },
   profile_card: {
