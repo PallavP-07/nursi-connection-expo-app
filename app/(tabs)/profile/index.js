@@ -6,6 +6,7 @@ import {
   Button,
   StyleSheet,
   TouchableOpacity,
+  StatusBar,
 } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { router } from "expo-router";
@@ -41,6 +42,7 @@ const NurseProfile = () => {
 
   return (
     <View style={styles.container}>
+       <StatusBar backgroundColor="#1856d9" barStyle="light-content"/>
       <Text style={styles.header}>Profile</Text>
       <View style={styles.profile_card}>
         <View style={styles.profileImage}>

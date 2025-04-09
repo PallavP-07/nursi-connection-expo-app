@@ -6,13 +6,16 @@ import {
   FlatList,
   TouchableOpacity,
   ActivityIndicator,
+  SafeAreaView,
+  StatusBar,
 } from "react-native";
-import Ionicons from '@expo/vector-icons/Ionicons';
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { Calendar } from "react-native-calendars";
 import moment from "moment";
 import { Image } from "react-native";
 import { AuthContext } from "../../context/authContext";
 import { getNurseDetailsAPI } from "../../api/authApi";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 // Dummy Data - Replace with API Response
 const allShiftData = Array.from({ length: 15 }, (_, index) => ({
@@ -23,8 +26,8 @@ const allShiftData = Array.from({ length: 15 }, (_, index) => ({
 
 // Colors for Shift Types
 const shiftColors = {
-  N: ["#007BFF", "#0056b3"], 
-  M: ["#28A745", "#1f7d3f"], 
+  N: ["#007BFF", "#0056b3"],
+  M: ["#28A745", "#1f7d3f"],
 };
 const fallbackShiftData = [
   {
@@ -44,9 +47,9 @@ const Home = () => {
   const [displayCount, setDisplayCount] = useState(20);
   const [filterType, setFilterType] = useState("all"); // all | day | week | month
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
-  const [nurseDetails,setNurseDetails]=useState("")
+  const [nurseDetails, setNurseDetails] = useState("");
   const [shiftData, setShiftData] = useState([]);
-    const { authToken } = useContext(AuthContext);
+  const { authToken } = useContext(AuthContext);
   const getFilteredShifts = () => {
     let filteredData = [...shiftData];
     if (selectedDate) {
@@ -93,144 +96,155 @@ const Home = () => {
           </View>
           <View style={styles.shiftAction}>
             <TouchableOpacity style={styles.actionButton}>
-             
-              <Ionicons name="checkmark-circle-outline" size={24} color="green" />
+              <Ionicons
+                name="checkmark-circle-outline"
+                size={24}
+                color="green"
+              />
             </TouchableOpacity>
             <TouchableOpacity style={styles.actionButton}>
-            <Ionicons name="close-circle-outline" size={24} color="red"/>
-         
+              <Ionicons name="close-circle-outline" size={24} color="red" />
             </TouchableOpacity>
           </View>
         </View>
       </View>
     );
   };
-useEffect(()=>{
-  const fetchNurseDetails = async()=>{
-    if(!authToken) return;
-    try{
-      const response = await getNurseDetailsAPI(authToken);
-      if(response.status && response.data){
-        setNurseDetails(response.data);
-        setShiftData(response.data.all_shift_data);
-      }else{
-        setShiftData(fallbackShiftData);
+  useEffect(() => {
+    const fetchNurseDetails = async () => {
+      if (!authToken) return;
+      try {
+        const response = await getNurseDetailsAPI(authToken);
+        if (response.status && response.data) {
+          setNurseDetails(response.data);
+          setShiftData(response.data.all_shift_data);
+        } else {
+          setShiftData(fallbackShiftData);
+        }
+      } catch (error) {
+        console.log(error);
       }
-    }catch(error){
-      console.log(error);
-    }
-  }
-  fetchNurseDetails();
-},[authToken]);
-if (!nurseDetails)
-  return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <ActivityIndicator size={60} color="#1856d9" />
-    </View>
-  );
-  return (
-    <View style={styles.container}>
-      <View style={styles.topContainer}>
-      <View style={styles.nurseInfo}>
-        <Image
-           source={{
-            uri: nurseDetails.imageUrl
-              ? nurseDetails.imageUrl
-              : "https://avatar.iran.liara.run/public/27"
-          }}
-          style={styles.nurseImage}
-        />
-        <View>
-          <Text style={styles.nurseName}>{nurseDetails.first_name} {nurseDetails.last_name}</Text>
-          <Text style={styles.nurseRole}>{nurseDetails.email}</Text>
-        </View>
+    };
+    fetchNurseDetails();
+  }, [authToken]);
+  if (!nurseDetails)
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size={60} color="#1856d9" />
       </View>
-      <View style={styles.iconContainer}>
-      <Ionicons name="notifications-outline" size={32} color="black" />
-      <Text style={styles.badge}>{shiftData.length}</Text>
-    </View>
-      </View>
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.title}>Shift Schedule</Text>
-
-        <View style={styles.iconContainer}>
-          {/* Calendar Icon */}
-          <TouchableOpacity onPress={() => setShowCalendar(!showCalendar)}>
-            <Ionicons name="calendar-outline" size={28} color="#333" />
-          </TouchableOpacity>
-
-          {/* Filter Icon */}
-          <TouchableOpacity
-            onPress={() => setShowFilterDropdown(!showFilterDropdown)}
-            style={styles.filterIcon}
-          >
-            <Ionicons name="filter-outline" size={28} color="#333" />
-          </TouchableOpacity>
-          {showFilterDropdown && (
-        <View style={styles.filterDropdown}>
-          {["all", "day", "week", "month"].map((type) => (
-            <TouchableOpacity
-              key={type}
-              style={[
-                styles.filterOption,
-                filterType === type && styles.activeFilter,
-              ]}
-              onPress={() => {
-                setFilterType(type);
-                setShowFilterDropdown(false);
+    );
+  return (
+    <SafeAreaProvider>
+      <SafeAreaView style={styles.container}>
+        <StatusBar backgroundColor="#eeeeee" barStyle="dark-content"/>
+        <View style={styles.topContainer}>
+          <View style={styles.nurseInfo}>
+            <Image
+              source={{
+                uri: nurseDetails.imageUrl
+                  ? nurseDetails.imageUrl
+                  : "https://avatar.iran.liara.run/public/27",
               }}
-            >
-              <Text
-                style={[
-                  styles.filterText,
-                  filterType === type && { color: "#FFF" },
-                ]}
-              >
-                {type.toUpperCase()}
+              style={styles.nurseImage}
+            />
+            <View>
+              <Text style={styles.nurseName}>
+                {nurseDetails.first_name} {nurseDetails.last_name}
               </Text>
+              <Text style={styles.nurseRole}>{nurseDetails.email}</Text>
+            </View>
+          </View>
+          <View style={styles.iconContainer}>
+            <Ionicons name="notifications-outline" size={32} color="black" />
+            {shiftData.length < 100 ?
+            
+            <Text style={styles.badge}>{shiftData.length}</Text>:
+            <Text style={styles.badge}>{null}</Text>
+          }
+          </View>
+        </View>
+        {/* Header */}
+        <View style={styles.header}>
+          <Text style={styles.title}>Shift Schedule</Text>
+
+          <View style={styles.iconContainer}>
+            {/* Calendar Icon */}
+            <TouchableOpacity onPress={() => setShowCalendar(!showCalendar)}>
+              <Ionicons name="calendar-outline" size={28} color="#333" />
             </TouchableOpacity>
-          ))}
-        </View>
-      )}
-        </View>
-      </View>
-      {/* Calendar Modal */}
-      {showCalendar && (
-        <View style={styles.calendarContainer}>
-          <Calendar
-            onDayPress={(day) => {
-              setSelectedDate(
-                day.dateString === selectedDate ? "" : day.dateString
-              );
-              setShowCalendar(false);
-            }}
-            markedDates={{
-              [selectedDate]: { selected: true, selectedColor: "blue" },
-            }}
-          />
-        </View>
-      )}
 
-      {/* Shift List */}
-      <FlatList
-        data={filteredShifts}
-        keyExtractor={(item) => item.full_date}
-        renderItem={renderShift}
-        contentContainerStyle={styles.list}
-      />
+            {/* Filter Icon */}
+            <TouchableOpacity
+              onPress={() => setShowFilterDropdown(!showFilterDropdown)}
+              style={styles.filterIcon}
+            >
+              <Ionicons name="filter-outline" size={28} color="#333" />
+            </TouchableOpacity>
+            {showFilterDropdown && (
+              <View style={styles.filterDropdown}>
+                {["all", "day", "week", "month"].map((type) => (
+                  <TouchableOpacity
+                    key={type}
+                    style={[
+                      styles.filterOption,
+                      filterType === type && styles.activeFilter,
+                    ]}
+                    onPress={() => {
+                      setFilterType(type);
+                      setShowFilterDropdown(false);
+                    }}
+                  >
+                    <Text
+                      style={[
+                        styles.filterText,
+                        filterType === type && { color: "#FFF" },
+                      ]}
+                    >
+                      {type.toUpperCase()}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            )}
+          </View>
+        </View>
+        {/* Calendar Modal */}
+        {showCalendar && (
+          <View style={styles.calendarContainer}>
+            <Calendar
+              onDayPress={(day) => {
+                setSelectedDate(
+                  day.dateString === selectedDate ? "" : day.dateString
+                );
+                setShowCalendar(false);
+              }}
+              markedDates={{
+                [selectedDate]: { selected: true, selectedColor: "blue" },
+              }}
+            />
+          </View>
+        )}
 
-      {/* Load More Button */}
-      {displayCount < allShiftData.length && (
-        <TouchableOpacity
-          style={styles.loadMore}
-          onPress={() => setDisplayCount(displayCount + 5)}
-        >
-          <Ionicons name="chevron-down" size={28} color="#007BFF" />
-          <Text style={styles.loadMoreText}>Load More</Text>
-        </TouchableOpacity>
-      )}
-    </View>
+        {/* Shift List */}
+        <FlatList
+          data={filteredShifts}
+          keyExtractor={(item) => item.full_date}
+          renderItem={renderShift}
+          contentContainerStyle={styles.list}
+        />
+
+        {/* Load More Button */}
+        {displayCount < allShiftData.length && (
+          <TouchableOpacity
+            style={styles.loadMore}
+            onPress={() => setDisplayCount(displayCount + 5)}
+          >
+            <Ionicons name="chevron-down" size={28} color="#007BFF" />
+            <Text style={styles.loadMoreText}>Load More</Text>
+          </TouchableOpacity>
+        )}
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 };
 
@@ -239,30 +253,38 @@ export default Home;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F8F9FA",
-    paddingHorizontal: 20,
-    paddingTop: 40,
+    // backgroundColor: "#F8F9FA",
+    // paddingHorizontal: 20,
+    // paddingTop: 40,
+    margin:20,
   },
-  topContainer:{flexDirection:"row",justifyContent:"space-between",alignItems:"center",marginBottom: 20},
+  topContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 20,
+  },
   nurseInfo: { flexDirection: "row", alignItems: "center" },
   iconContainer: {
     position: "relative",
+  
   },
   badge: {
     position: "absolute",
     top: -1,
-    right: -1,
-    fontSize:14,
+    right:0,
+    fontSize: 8,
     backgroundColor: "red",
     color: "white",
-    padding:0,
-    borderRadius:50,
-    width:"50%",
-    textAlign:"center"
+    padding: 2,
+    borderRadius: 50,
+    width:14,
+    height:14,
+    textAlign: "center",
   },
   nurseImage: { width: 60, height: 60, borderRadius: 50, marginRight: 16 },
-  nurseName:{fontSize:24, fontWeight:"600" },
-  nurseRole:{ fontSize:16},
+  nurseName: { fontSize: 24, fontWeight: "600" },
+  nurseRole: { fontSize: 16 },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -271,7 +293,7 @@ const styles = StyleSheet.create({
   },
   title: { fontSize: 22, fontWeight: "bold", color: "#333" },
   iconContainer: { flexDirection: "row" },
-  filterIcon: { marginLeft: 15,position:"relative" },
+  filterIcon: { marginLeft: 15, position: "relative" },
   list: { paddingBottom: 24 },
   cardWrapper: { marginBottom: 10, elevation: 3 },
   shiftCard: {
@@ -289,7 +311,7 @@ const styles = StyleSheet.create({
     borderWidth: 1.4,
     borderColor: "#007BFF",
     borderRadius: 14,
-    padding:4,
+    padding: 4,
   },
   dayText: { fontSize: 12, fontWeight: "bold", color: "#222" },
   dateText: { fontSize: 18, fontWeight: "bold", color: "#007BFF" },
@@ -306,7 +328,7 @@ const styles = StyleSheet.create({
   },
   filterDropdown: {
     position: "absolute",
-    top:30,
+    top: 30,
     right: 0,
     backgroundColor: "#F6F6F6",
     borderRadius: 10,
@@ -321,16 +343,16 @@ const styles = StyleSheet.create({
   filterText: { fontSize: 14, fontWeight: "bold", color: "#333" },
   calendarContainer: { borderRadius: 10, overflow: "hidden", marginBottom: 10 },
   loadMore: {
-    flexDirection:"row",
-    justifyContent:"center",
-    alignItems:"center",
-    gap:1,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 1,
     padding: 3,
-    backgroundColor:"none",
+    backgroundColor: "none",
     borderRadius: 8,
-    color:"#0000",
+    color: "#0000",
     alignItems: "center",
     margin: 5,
   },
-  loadMoreText: { color: "#007BFF", fontSize: 14, fontWeight:"bold" },
+  loadMoreText: { color: "#007BFF", fontSize: 14, fontWeight: "bold" },
 });

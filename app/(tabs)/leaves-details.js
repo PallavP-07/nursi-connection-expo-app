@@ -11,6 +11,7 @@ import {
 import CustomModel from "../../components/CustomModel";
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { LinearGradient } from "expo-linear-gradient";
+import RequestLeaveForm from '../../components/RequestLeaveForm'
 const leaveData = [
   { id: "1", type: "Sick Leave", from: "March 1, 2025", to: "March 3, 2025", status: "Approved", reason: "High fever and doctor's recommendation" },
   { id: "2", type: "Casual Leave", from: "March 10, 2025", to: "March 11, 2025", status: "Pending", reason: "Family function" },
@@ -132,8 +133,8 @@ const LeaveDetails = () => {
       </TouchableOpacity>
 
       {/* Modal */}
-      <Modal visible={modalVisible} animationType="slide" transparent>
-        <CustomModel setModalVisible={setModalVisible} modalVisible={modalVisible} />
+      <Modal visible={modalVisible} animationType="slide" transparent  >
+        <CustomModel setModalVisible={setModalVisible} modalVisible={modalVisible} content={<RequestLeaveForm/>} />
       </Modal>
     </View>
   );
