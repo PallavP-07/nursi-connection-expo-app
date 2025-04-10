@@ -16,7 +16,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import Feather from "@expo/vector-icons/Feather";
 import { loginAPI } from "../../api/authApi";
 import { AuthContext } from "../../context/authContext";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 
 const SignIn = () => {
   const [passwordVisible, setPasswordVisible] = useState(false);

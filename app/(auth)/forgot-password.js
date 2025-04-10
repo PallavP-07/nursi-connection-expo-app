@@ -57,7 +57,7 @@ const ForgotPassword = () => {
             </TouchableOpacity>
 
             {/* Lottie Animation or Image */}
-            <Image source={require("../../assets/images/forgotPassword.png")} style={styles.animation} />
+            <Image source={require("../../assets/images/forgot-password-bg.png")} style={styles.animation} />
 
             {/* Step 1: Enter Email */}
             {step === 1 && (
