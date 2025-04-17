@@ -97,13 +97,13 @@ const Home = () => {
           <View style={styles.shiftAction}>
             <TouchableOpacity style={styles.actionButton}>
               <Ionicons
-                name="checkmark-circle-outline"
+                name="checkmark"
                 size={24}
                 color="green"
               />
             </TouchableOpacity>
             <TouchableOpacity style={styles.actionButton}>
-              <Ionicons name="close-circle-outline" size={24} color="red" />
+              <Ionicons name="close" size={24} color="red" />
             </TouchableOpacity>
           </View>
         </View>
@@ -291,40 +291,44 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 20,
   },
-  title: { fontSize: 22, fontWeight: "bold", color: "#333" },
+  title: { fontSize: 22, fontWeight: "bold", color: "#525252" },
   iconContainer: { flexDirection: "row" },
   filterIcon: { marginLeft: 15, position: "relative" },
   list: { paddingBottom: 24 },
-  cardWrapper: { marginBottom: 10, elevation: 3 },
+  cardWrapper: { marginBottom: 10, borderColor:"#dadada" ,borderWidth:1, borderRadius:10, backgroundColor: "#FFF", overflow:"hidden",padding:5,   shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 3, },
   shiftCard: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#FFF",
-    padding: 6,
-    borderRadius: 20,
-    borderLeftWidth: 5,
   },
   dateContainer: {
     alignItems: "center",
     width: 50,
     marginRight: 20,
-    borderWidth: 1.4,
-    borderColor: "#007BFF",
-    borderRadius: 14,
-    padding: 4,
+    backgroundColor:"#90EE90",
+    padding:4,
+    borderRadius:8
+    
   },
-  dayText: { fontSize: 12, fontWeight: "bold", color: "#222" },
-  dateText: { fontSize: 18, fontWeight: "bold", color: "#007BFF" },
-  monthText: { fontSize: 13, color: "#555" },
+  dayText: { fontSize: 12, fontWeight: "bold", color: "#008000" },
+  dateText: { fontSize: 18, fontWeight: "bold", color: "#008000" },
+  monthText: { fontSize: 13, color: "#008000" },
   shiftInfo: { flex: 1 },
-  shiftTime: { fontSize: 16, color: "#555" },
+  shiftTime: { fontSize: 16, color: "#717171" ,fontWeight:"600" },
   shiftAction: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 10,
+    // marginTop: 10,
+    gap:10
   },
   actionButton: {
-    padding: 5,
+    padding: 3,
+    borderWidth:1,
+    borderColor:"#dedede",
+    borderRadius:50,
   },
   filterDropdown: {
     position: "absolute",

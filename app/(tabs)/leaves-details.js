@@ -9,20 +9,48 @@ import {
   Modal,
 } from "react-native";
 import CustomModel from "../../components/CustomModel";
-import Ionicons from '@expo/vector-icons/Ionicons';
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { LinearGradient } from "expo-linear-gradient";
-import RequestLeaveForm from '../../components/RequestLeaveForm'
+import RequestLeaveForm from "../../components/RequestLeaveForm";
 const leaveData = [
-  { id: "1", type: "Sick Leave", from: "March 1, 2025", to: "March 3, 2025", status: "Approved", reason: "High fever and doctor's recommendation" },
-  { id: "2", type: "Casual Leave", from: "March 10, 2025", to: "March 11, 2025", status: "Pending", reason: "Family function" },
-  { id: "3", type: "Emergency Leave", from: "March 15, 2025", to: "March 16, 2025", status: "Rejected", reason: "Not enough staff availability" },
-  { id: "4", type: "Vacation", from: "April 5, 2025", to: "April 10, 2025", status: "Approved", reason: "Annual leave" },
+  {
+    id: "1",
+    type: "Sick Leave",
+    from: "March 1, 2025",
+    to: "March 3, 2025",
+    status: "Approved",
+    reason: "High fever and doctor's recommendation",
+  },
+  {
+    id: "2",
+    type: "Casual Leave",
+    from: "March 10, 2025",
+    to: "March 11, 2025",
+    status: "Pending",
+    reason: "Family function",
+  },
+  {
+    id: "3",
+    type: "Emergency Leave",
+    from: "March 15, 2025",
+    to: "March 16, 2025",
+    status: "Rejected",
+    reason: "Not enough staff availability",
+  },
+  {
+    id: "4",
+    type: "Vacation",
+    from: "April 5, 2025",
+    to: "April 10, 2025",
+    status: "Approved",
+    reason: "Annual leave",
+  },
 ];
 const leaveGradients = [
-  ["#6D80FE", "#23D2FD"], // Orange-Red
-  ["#FF998B", "#FF6D88"], // Purple-Blue
-  ["#09AFE8", "#29F499"], // Green-Blue
-  ["#FA81E8", "#707CFF"], // Red-Pink
+  ["#36D1DC", "#5B86E5"], // Indigo to Navy Blue – calm and corporate
+  ["#FF5858", "#FB5895"], // Soft Blue to Purple – modern & clean
+  ["#42E695", "#3BB2B8"], // Teal to Soft Green – fresh and balanced
+  ["#9D50BB", "#6E48AA"], // Vivid Blue – professional yet vibrant
 ];
 
 const leaveSummary = {
@@ -39,10 +67,14 @@ const leaveSummaryData = [
 ];
 const getStatusColor = (status) => {
   switch (status) {
-    case "Approved": return "#28A745";
-    case "Pending": return "#FFC107";
-    case "Rejected": return "#DC3545";
-    default: return "#333";
+    case "Approved":
+      return "#72c63f";
+    case "Pending":
+      return "#ffa800";
+    case "Rejected":
+      return "#fb4e48";
+    default:
+      return "#333";
   }
 };
 
@@ -67,14 +99,24 @@ const LeaveDetails = () => {
     }).start();
   };
 
-  const filteredLeaveData = filter === "All" ? leaveData : leaveData.filter((item) => item.status === filter);
+  const filteredLeaveData =
+    filter === "All"
+      ? leaveData
+      : leaveData.filter((item) => item.status === filter);
 
   const renderLeaveItem = ({ item }) => (
     <View style={styles.card}>
-      <Text style={styles.type}>{item.type}</Text>
-      <Text style={styles.date}>{item.from} - {item.to}</Text>
+      <View style={styles.cardHeader}>
+        <Text style={styles.type}>{item.type}</Text>
+        <Text style={[styles.status, { color: getStatusColor(item.status) }]}>
+          {item.status}
+        </Text>
+      </View>
+      <Text style={styles.date}>
+        <Ionicons name="calendar-clear-outline" size={16} color="#9c9c9c" />
+        {item.from} - {item.to}
+      </Text>
       <Text style={styles.reason}>{item.reason}</Text>
-      <Text style={[styles.status, { color: getStatusColor(item.status) }]}>{item.status}</Text>
     </View>
   );
 
@@ -84,19 +126,19 @@ const LeaveDetails = () => {
 
       {/* Leave Summary */}
       <View style={styles.summaryContainer}>
-  {leaveSummaryData.map((item, index) => (
-    <LinearGradient
-      key={index}
-      start={{ x: 1, y: 0 }} 
-      end={{ x: 0, y: 0 }} 
-      colors={leaveGradients[index]} // Assign a unique gradient to each card
-      style={styles.summaryCard}
-    >
-      <Text style={styles.summaryTitle}>{item.title}</Text>
-      <Text style={styles.summaryValue}>{item.value}</Text>
-    </LinearGradient>
-  ))}
-</View>
+        {leaveSummaryData.map((item, index) => (
+          <LinearGradient
+            key={index}
+            start={{ x: 1, y: 0 }}
+            end={{ x: 0, y: 0 }}
+            colors={leaveGradients[index]} // Assign a unique gradient to each card
+            style={styles.summaryCard}
+          >
+            <Text style={styles.summaryTitle}>{item.title}</Text>
+            <Text style={styles.summaryValue}>{item.value}</Text>
+          </LinearGradient>
+        ))}
+      </View>
 
       {/* Tab Filter */}
       <View style={styles.tabContainer} onLayout={onTabLayout}>
@@ -110,8 +152,17 @@ const LeaveDetails = () => {
           ]}
         />
         {filters.map((status, index) => (
-          <TouchableOpacity key={status} style={styles.tabButton} onPress={() => onTabPress(index)}>
-            <Text style={[styles.tabText, filter === status && styles.activeTabText]}>
+          <TouchableOpacity
+            key={status}
+            style={styles.tabButton}
+            onPress={() => onTabPress(index)}
+          >
+            <Text
+              style={[
+                styles.tabText,
+                filter === status && styles.activeTabText,
+              ]}
+            >
               {status}
             </Text>
           </TouchableOpacity>
@@ -127,14 +178,21 @@ const LeaveDetails = () => {
       />
 
       {/* Request Leave Button */}
-      <TouchableOpacity style={styles.requestLeaveButton} onPress={() => setModalVisible(true)}>
-      <Ionicons name="add-circle-outline" size={24} color="white" />
+      <TouchableOpacity
+        style={styles.requestLeaveButton}
+        onPress={() => setModalVisible(true)}
+      >
+        <Ionicons name="add-circle-outline" size={24} color="white" />
         <Text style={styles.buttonText}>Request Leave</Text>
       </TouchableOpacity>
 
       {/* Modal */}
-      <Modal visible={modalVisible} animationType="slide" transparent  >
-        <CustomModel setModalVisible={setModalVisible} modalVisible={modalVisible} content={<RequestLeaveForm/>} />
+      <Modal visible={modalVisible} animationType="slide" transparent>
+        <CustomModel
+          setModalVisible={setModalVisible}
+          modalVisible={modalVisible}
+          content={<RequestLeaveForm />}
+        />
       </Modal>
     </View>
   );
@@ -167,26 +225,31 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFF",
     padding: 12,
     borderRadius: 8,
-    alignItems: "center",
-    elevation: 3,
+    alignItems: "start",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 4,
     marginBottom: 10,
   },
   summaryTitle: {
     fontSize: 18,
     color: "#fff",
-    fontWeight:"600"
+    // fontWeight: "600",
   },
   summaryValue: {
-    fontSize: 22,
+    fontSize: 25,
     fontWeight: "bold",
     color: "#fff",
     marginTop: 5,
   },
   tabContainer: {
     flexDirection: "row",
-    backgroundColor: "#E0E0E0",
+    backgroundColor: "#eaeaea",
     borderRadius: 8,
     marginBottom: 20,
+    padding: 2,
     height: 40,
     alignItems: "center",
     position: "relative",
@@ -194,8 +257,9 @@ const styles = StyleSheet.create({
   activeTab: {
     position: "absolute",
     height: "100%",
-    backgroundColor: "gray",
+    backgroundColor: "#ffffff",
     borderRadius: 8,
+    color: "#2c2c2c",
   },
   tabButton: {
     flex: 1,
@@ -204,11 +268,11 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   tabText: {
-    color: "#333",
+    color: "#6b6b6b",
     fontWeight: "bold",
   },
   activeTabText: {
-    color: "#FFF",
+    color: "#2c2c2c",
   },
   list: {
     paddingBottom: 20,
@@ -218,17 +282,31 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 8,
     marginBottom: 10,
-    elevation: 2,
+    borderColor: "#dadada",
+    borderWidth: 1,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 4,
+  },
+  cardHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   type: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#333",
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#000000",
   },
   date: {
-    fontSize: 14,
+    fontSize: 16,
     color: "#666",
     marginTop: 5,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 3,
   },
   reason: {
     fontSize: 14,
@@ -238,8 +316,12 @@ const styles = StyleSheet.create({
   },
   status: {
     fontSize: 14,
-    fontWeight: "bold",
-    marginTop: 10,
+    // fontWeight: "bold",
+    // marginTop: 10,
+    // color:'#f0f0f0',
+    padding: 4,
+    borderRadius: 20,
+    // elevation: 5,
   },
   requestLeaveButton: {
     backgroundColor: "#007BFF",
@@ -247,11 +329,11 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: "center",
     marginTop: 20,
-    marginBottom:15,
-    flexDirection:"row",
-    justifyContent:"center",
-    alignContent:"center",
-    gap:4
+    marginBottom: 15,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignContent: "center",
+    gap: 4,
   },
   buttonText: {
     color: "#FFF",

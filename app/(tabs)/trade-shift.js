@@ -95,7 +95,7 @@ const TradeShift = () => {
       timeLeft: "1 days left",
     },
   ]);
-  
+
   const [sentRequests, setSentRequests] = useState([]);
 
   const [selectedUser, setSelectedUser] = useState(users[0]);
@@ -153,41 +153,37 @@ const TradeShift = () => {
       {/* Profile Section */}
       <View style={styles.userAvatarRow}>
         <View style={styles.avatarContainer}>
-          <Image
-            source={{ uri: item.fromImage }}
-            style={styles.avatar}
-          />
+          <Image source={{ uri: item.fromImage }} style={styles.avatar} />
           <Text style={styles.avatarLabel}>{item.from}</Text>
         </View>
         <Ionicons name="repeat" size={22} color="#444" />
         <View style={styles.avatarContainer}>
-          <Image
-            source={{ uri: item.toImage }}
-            style={styles.avatar}
-          />
+          <Image source={{ uri: item.toImage }} style={styles.avatar} />
           <Text style={styles.avatarLabel}>{item.to}</Text>
         </View>
       </View>
-  
+
       {/* Shift Box */}
       <View style={styles.shiftBox}>
         <View style={[styles.shiftCard]}>
           <Text style={styles.cardSubtitle}>
-            {activeTab === "Received" ? "They want to trade:" : "You want to trade:"}
+            {activeTab === "Received"
+              ? "They want to trade:"
+              : "You want to trade:"}
           </Text>
           <Text style={styles.cardText}>{item.fromShift.date}</Text>
           <Text style={styles.cardShiftTime}>
             {item.fromShift.shift} ({item.fromShift.time})
           </Text>
         </View>
-  
+
         {/* <Ionicons
           name={activeTab === "Received" ? "arrow-forward" : "arrow-back"}
           size={22}
           color="#888"
           style={{ marginHorizontal: 10 }}
         /> */}
-  
+
         <View style={[styles.shiftCard]}>
           <Text style={styles.cardSubtitle}>
             {activeTab === "Received" ? "With your shift:" : "Their shift:"}
@@ -198,36 +194,37 @@ const TradeShift = () => {
           </Text>
         </View>
       </View>
-  
+
       {/* Accept/Reject or Status */}
       {activeTab === "Received" && item.status === "Pending" ? (
-  <>
-    {item.timeLeft && (
-      <View style={styles.pendingTimeCard}>
-
-<View style={styles.pendingTimeContainer}>
-        <Ionicons name="timer-outline" size={16} color="white" />
-        <Text style={styles.pendingTimeText}>{item.timeLeft}</Text>
-      </View>
-    <View style={styles.iconContainer}>
-      <TouchableOpacity onPress={() => handleAccept(item.id)}>
-        <Ionicons name="checkmark-circle" size={32} color="#28a745" />
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => handleReject(item.id)}>
-        <Ionicons name="close-circle" size={32} color="#dc3545" />
-      </TouchableOpacity>
-    </View>
-      </View>
-    )}
-  </>
-) : (
-  <Text style={styles.statusText}>
-    Status:{" "}
-    <Text style={{ fontWeight: "bold", color: getStatusColor(item.status) }}>
-      {item.status}
-    </Text>
-  </Text>
-)}
+        <>
+          {item.timeLeft && (
+            <View style={styles.pendingTimeCard}>
+              <View style={styles.pendingTimeContainer}>
+                <Ionicons name="timer-outline" size={16} color="white" />
+                <Text style={styles.pendingTimeText}>{item.timeLeft}</Text>
+              </View>
+              <View style={styles.iconContainer}>
+                <TouchableOpacity onPress={() => handleAccept(item.id)} style={styles.actionButton}>
+                  <Ionicons name="checkmark" size={24} color="#28a745" />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => handleReject(item.id)}  style={styles.actionButton}>
+                  <Ionicons name="close" size={24} color="#dc3545" />
+                </TouchableOpacity>
+              </View>
+            </View>
+          )}
+        </>
+      ) : (
+        <Text style={styles.statusText}>
+          Status:{" "}
+          <Text
+            style={{ fontWeight: "bold", color: getStatusColor(item.status) }}
+          >
+            {item.status}
+          </Text>
+        </Text>
+      )}
     </View>
   );
 
@@ -277,103 +274,103 @@ const TradeShift = () => {
         </TouchableOpacity>
 
         {/* Modal */}
-        
-    <Modal visible={modalVisible} animationType="slide" transparent>
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            {/* Close Button */}
-            <TouchableOpacity
-              style={styles.closeButton}
-              onPress={() => setModalVisible(false)}
-            >
-              <Ionicons name="close" size={28} color="black" />
-            </TouchableOpacity>
 
-            <Text style={styles.modalTitle}>Trade Request</Text>
+        <Modal visible={modalVisible} animationType="slide" transparent>
+          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <View style={styles.modalContainer}>
+              <View style={styles.modalContent}>
+                {/* Close Button */}
+                <TouchableOpacity
+                  style={styles.closeButton}
+                  onPress={() => setModalVisible(false)}
+                >
+                  <Ionicons name="close" size={28} color="black" />
+                </TouchableOpacity>
 
-            <Text style={styles.label}>Select a colleague:</Text>
-            <View style={{ zIndex: 3000, marginBottom: 10 }}>
-              <DropDownPicker
-                open={userDropdownOpen}
-                value={selectedUser?.name}
-                items={users.map((u) => ({
-                  label: u.name,
-                  value: u.name,
-                }))}
-                setOpen={setUserDropdownOpen}
-                setValue={(callback) => {
-                  const name = callback(selectedUser?.name);
-                  const user = users.find((u) => u.name === name);
-                  setSelectedUser(user);
-                  setSelectedUserShift(null);
-                }}
-                dropDownContainerStyle={{ zIndex: 3000 }}
-              />
+                <Text style={styles.modalTitle}>Trade Request</Text>
+
+                <Text style={styles.label}>Select a colleague:</Text>
+                <View style={{ zIndex: 3000, marginBottom: 10 }}>
+                  <DropDownPicker
+                    open={userDropdownOpen}
+                    value={selectedUser?.name}
+                    items={users.map((u) => ({
+                      label: u.name,
+                      value: u.name,
+                    }))}
+                    setOpen={setUserDropdownOpen}
+                    setValue={(callback) => {
+                      const name = callback(selectedUser?.name);
+                      const user = users.find((u) => u.name === name);
+                      setSelectedUser(user);
+                      setSelectedUserShift(null);
+                    }}
+                    dropDownContainerStyle={{ zIndex: 3000 }}
+                  />
+                </View>
+
+                <Text style={styles.label}>
+                  <Ionicons name="calendar-outline" size={20} /> Choose their
+                  shift:
+                </Text>
+                <View style={{ zIndex: 2000, marginBottom: 10 }}>
+                  <DropDownPicker
+                    open={userShiftDropdownOpen}
+                    value={selectedUserShift?.id}
+                    items={
+                      selectedUser?.shifts?.map((s) => ({
+                        label: `${s.date} - ${s.shift} (${s.time})`,
+                        value: s.id,
+                      })) || []
+                    }
+                    setOpen={setUserShiftDropdownOpen}
+                    setValue={(callback) =>
+                      setSelectedUserShift(
+                        selectedUser.shifts.find((s) => s.id === callback(null))
+                      )
+                    }
+                    dropDownContainerStyle={{ zIndex: 2000 }}
+                  />
+                </View>
+
+                <Text style={styles.label}>
+                  <Ionicons name="calendar-outline" size={20} /> Offer your
+                  shift:
+                </Text>
+                <View style={{ zIndex: 1000, marginBottom: 10 }}>
+                  <DropDownPicker
+                    open={myShiftDropdownOpen}
+                    value={myOfferedShift?.id}
+                    items={myShifts.map((s) => ({
+                      label: `${s.date} - ${s.shift} (${s.time})`,
+                      value: s.id,
+                    }))}
+                    setOpen={setMyShiftDropdownOpen}
+                    setValue={(callback) =>
+                      setMyOfferedShift(
+                        myShifts.find((s) => s.id === callback(null))
+                      )
+                    }
+                    dropDownContainerStyle={{ zIndex: 1000 }}
+                  />
+                </View>
+
+                <TouchableOpacity
+                  style={[
+                    styles.submitButton,
+                    !(selectedUserShift && myOfferedShift) && {
+                      backgroundColor: "#ccc",
+                    },
+                  ]}
+                  onPress={handleTradeSubmit}
+                  disabled={!selectedUserShift || !myOfferedShift}
+                >
+                  <Text style={styles.buttonText}>Send Request</Text>
+                </TouchableOpacity>
+              </View>
             </View>
-
-            <Text style={styles.label}>
-              <Ionicons name="calendar-outline" size={20} /> Choose their shift:
-            </Text>
-            <View style={{ zIndex: 2000, marginBottom: 10 }}>
-              <DropDownPicker
-                open={userShiftDropdownOpen}
-                value={selectedUserShift?.id}
-                items={
-                  selectedUser?.shifts?.map((s) => ({
-                    label: `${s.date} - ${s.shift} (${s.time})`,
-                    value: s.id,
-                  })) || []
-                }
-                setOpen={setUserShiftDropdownOpen}
-                setValue={(callback) =>
-                  setSelectedUserShift(
-                    selectedUser.shifts.find(
-                      (s) => s.id === callback(null)
-                    )
-                  )
-                }
-                dropDownContainerStyle={{ zIndex: 2000 }}
-              />
-            </View>
-
-            <Text style={styles.label}>
-              <Ionicons name="calendar-outline" size={20} /> Offer your shift:
-            </Text>
-            <View style={{ zIndex: 1000, marginBottom: 10 }}>
-              <DropDownPicker
-                open={myShiftDropdownOpen}
-                value={myOfferedShift?.id}
-                items={myShifts.map((s) => ({
-                  label: `${s.date} - ${s.shift} (${s.time})`,
-                  value: s.id,
-                }))}
-                setOpen={setMyShiftDropdownOpen}
-                setValue={(callback) =>
-                  setMyOfferedShift(
-                    myShifts.find((s) => s.id === callback(null))
-                  )
-                }
-                dropDownContainerStyle={{ zIndex: 1000 }}
-              />
-            </View>
-
-            <TouchableOpacity
-              style={[
-                styles.submitButton,
-                !(selectedUserShift && myOfferedShift) && {
-                  backgroundColor: "#ccc",
-                },
-              ]}
-              onPress={handleTradeSubmit}
-              disabled={!selectedUserShift || !myOfferedShift}
-            >
-              <Text style={styles.buttonText}>Send Request</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </TouchableWithoutFeedback>
-    </Modal>
+          </TouchableWithoutFeedback>
+        </Modal>
       </SafeAreaView>
     </SafeAreaProvider>
   );
@@ -526,13 +523,19 @@ const styles = StyleSheet.create({
   iconContainer: {
     flexDirection: "row",
     justifyContent: "flex-end",
-    gap: 6,
-    // marginTop: 12,
+    gap: 15,
   },
-  pendingTimeCard:{
-    display:'flex',
-    flexDirection:"row",
-    justifyContent:"space-between"
+  actionButton:{
+    padding: 4,
+    borderWidth:1,
+    borderColor:"#dedede",
+    borderRadius:50,
+    // elevation:5,
+  },
+  pendingTimeCard: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   pendingTimeContainer: {
     flexDirection: "row",

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -12,7 +12,9 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { router } from "expo-router";
 import { useContext } from "react";
 import { AuthContext } from "../../../context/authContext";
+import * as ImagePicker from 'expo-image-picker';
 const NurseProfile = () => {
+  const [image, setImage] = useState(null);
   // Dummy data
   const nurseData = {
     name: "Jane Doe",
@@ -21,9 +23,20 @@ const NurseProfile = () => {
     image: "https://avatar.iran.liara.run/public/27", // Placeholder image URL
   };
   const { removeToken } = useContext(AuthContext);
-  const handleChangeImage = () => {
-    // Logic to change the image
-    console.log("Change Image Pressed");
+  const pickImage = async () => {
+    // No permissions request is necessary for launching the image library
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images', 'videos'],
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    console.log(result);
+
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
+    }
   };
 
   const userLogout = async () => {
@@ -43,13 +56,13 @@ const NurseProfile = () => {
   return (
     <View style={styles.container}>
        <StatusBar backgroundColor="#1856d9" barStyle="light-content"/>
-      <Text style={styles.header}>Profile</Text>
+    
       <View style={styles.profile_card}>
         <View style={styles.profileImage}>
-          <Image source={{ uri: nurseData.image }} style={styles.profile_img} />
+        {image ? <Image source={{ uri: image }} style={styles.profile_img}  />:<Image source={{ uri: nurseData.image }} style={styles.profile_img} />}  
           <TouchableOpacity
             style={styles.changeImageButton}
-            onPress={handleChangeImage}
+            onPress={pickImage}
           >
             <Ionicons
               name="camera-outline"
@@ -97,13 +110,13 @@ const NurseProfile = () => {
           <Ionicons name="chevron-forward" size={22} color="#999" />
         </TouchableOpacity>
         <TouchableOpacity style={styles.logoutButton} onPress={userLogout}>
+          <Text style={styles.buttonText}>Logout</Text>
           <Ionicons
             name="log-out-outline"
             size={20}
             color="#fff"
             style={styles.logoutIcon}
           />
-          <Text style={styles.buttonText}>Logout</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -143,7 +156,7 @@ const styles = StyleSheet.create({
   profileImage: {
     position: "absolute",
     top: -80,
-    backgroundColor: "#76d7c4",
+    backgroundColor: "#cecece",
     width: 160,
     height: 160,
     borderRadius: 100,
@@ -175,20 +188,22 @@ const styles = StyleSheet.create({
   },
   changeImageButton: {
     backgroundColor: "#eeeeee",
-    width: 45,
-    height: 45,
-    padding: 6,
+    width: 40,
+    height: 40,
+    padding: 4,
     borderRadius: 50,
     position: "absolute",
     bottom: 0,
-    right: 0,
+    right: 2,
     zIndex: 20,
     marginBottom: 10,
+    borderWidth:1,
+    borderColor:"#cecece"
   },
   changeImageButton_icon: {
     color: "#616161",
-    alignItems: "center",
-    margin: 4,
+    margin: 2,
+    textAlign:"center"
   },
   logoutButton: {
     flexDirection: "row",
@@ -201,16 +216,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     elevation: 3,
   },
-
-  logoutIcon: {
-    marginRight: 10, // Space between icon and text
-  },
-
   buttonText: {
     color: "#fff",
     fontSize: 16,
     fontWeight: "bold",
     textAlign: "center",
+    marginRight:5
   },
   optionBox: {
     flexDirection: "row",

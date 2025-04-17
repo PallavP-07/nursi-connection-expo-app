@@ -18,7 +18,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/Logo_col.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.pallav1503.nursiconnectionapp"
     },
     "web": {
       "bundler": "metro",
@@ -42,10 +43,24 @@
           "configureAndroidBackup": true,
           "faceIDPermission": "Allow $(PRODUCT_NAME) to access your Face ID biometric data."
         }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "The app accesses your photos to let you share them with your friends."
+        }
       ]
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "f44cf119-adec-4516-872c-a6de0ddbc530"
+      }
     }
   }
 }

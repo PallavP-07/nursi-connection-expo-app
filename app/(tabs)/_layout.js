@@ -14,16 +14,16 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: "#4DA6FF",
-        tabBarStyle: { backgroundColor: "#ffff", paddingTop: 10, height: 65 },
-        headerShown: false, // Hide header for all tabs
+        tabBarActiveTintColor: "#0076ff",
+        tabBarStyle: { backgroundColor: "#ffff", paddingTop: 10, height: 76, },
+        headerShown: false,
       }}
     >
       <Tabs.Screen
         name="home"
         options={{
           tabBarIcon: ({ color }) => (
-            <Ionicons name="calendar-outline" size={24} color={color} />
+            <Ionicons name="home-outline" size={24} color={color} />
           ),
           tabBarLabel: "Home",
         }}
