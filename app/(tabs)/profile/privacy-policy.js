@@ -1,11 +1,25 @@
-import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
+import React, { useLayoutEffect } from "react";
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, StatusBar, SafeAreaView } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { router } from "expo-router";
+import { useNavigation } from "@react-navigation/native";
 
 const PrivacyPolicyScreen = () => {
+  const navigation = useNavigation();
+
+  useLayoutEffect(()=>{
+    navigation.getParent()?.setOptions({
+      tabBarStyle: { display: 'none' },
+    });
+    return () => {
+      navigation.getParent()?.setOptions({
+        tabBarStyle: undefined, 
+      });
+    };
+  },[navigation]);
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
+      <StatusBar backgroundColor="#007bff" barStyle="light-content" />
       {/* Header Section with Back Button */}
       <View style={styles.headerContainer}>
         <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
@@ -51,7 +65,7 @@ const PrivacyPolicyScreen = () => {
         {/* Bottom Space for Better Scroll Experience */}
         <View style={{ height: 40 }} />
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 };
 

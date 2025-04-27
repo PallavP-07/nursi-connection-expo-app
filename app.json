@@ -1,42 +1,42 @@
 {
   "expo": {
-    "name": "nursi-connection-app",
+    "name": "nursi-connection",
     "slug": "nursi-connection-app",
-    "version": "1.0.0",
+    "version": "2.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/Logo_col.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/images/splash-icon-light.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#1D1D6E"
+    },
     "ios": {
       "supportsTablet": true,
       "config": {
         "usesNonExemptEncryption": false
-      }
+      },
+      "bundleIdentifier": "com.pallav1503.nursiconnectionapp"
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/Logo_col.png",
+        "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.pallav1503.nursiconnectionapp"
+      "package": "com.pallav1503.nursiconnectionapp",
+      "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/Logo_col.png"
+      "favicon": "./assets/images/NursiLogo.png"
     },
     "plugins": [
       "expo-router",
-      [
-        "expo-splash-screen",
-        {
-          "image": "./assets/images/mainLogo.png",
-          "imageWidth": 100,
-          "resizeMode": "contain",
-          "backgroundColor": "#1856d9"
-        }
-      ],
       [
         "expo-secure-store",
         {
@@ -61,6 +61,12 @@
       "eas": {
         "projectId": "f44cf119-adec-4516-872c-a6de0ddbc530"
       }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/f44cf119-adec-4516-872c-a6de0ddbc530"
     }
   }
 }

@@ -17,7 +17,7 @@ const NurseProfile = () => {
   const [image, setImage] = useState(null);
   // Dummy data
   const nurseData = {
-    name: "Jane Doe",
+    name: "Kyra D'souza",
     role: "Registered Nurse",
     id: "RN123456",
     image: "https://avatar.iran.liara.run/public/27", // Placeholder image URL
@@ -42,17 +42,6 @@ const NurseProfile = () => {
   const userLogout = async () => {
     await removeToken();
   };
-
-  const handlePrivacyPolicy = () => {
-    // Logic to navigate to privacy policy
-    console.log("Privacy Policy Pressed");
-  };
-
-  const handleContactUs = () => {
-    // Logic to navigate to contact us
-    console.log("Contact Us Pressed");
-  };
-
   return (
     <View style={styles.container}>
        <StatusBar backgroundColor="#1856d9" barStyle="light-content"/>

@@ -1,12 +1,26 @@
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, StatusBar, SafeAreaView } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { router } from "expo-router";
+import { useNavigation } from "@react-navigation/native";
+import { useLayoutEffect } from "react";
 
 const ProfileDetails = () => {
+      const navigation = useNavigation();
+    
+      useLayoutEffect(()=>{
+        navigation.getParent()?.setOptions({
+          tabBarStyle: { display: 'none' },
+        });
+        return () => {
+          navigation.getParent()?.setOptions({
+            tabBarStyle: undefined, 
+          });
+        };
+      },[navigation]);
   // Dummy Nurse Data
   const nurseData = {
-    name: "Jane Doe",
+    name: "Kyra D'souza",
     role: "Registered Nurse",
     id: "RN123456",
     experience: "5 Years",
@@ -19,7 +33,8 @@ const ProfileDetails = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
+       <StatusBar backgroundColor="#007bff" barStyle="light-content" />
       {/* Header with Back Button */}
       <View style={styles.headerContainer}>
         <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
@@ -58,7 +73,7 @@ const ProfileDetails = () => {
           <InfoRow label="Address" value={nurseData.address} icon="location-outline" />
         </View>
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 };
 

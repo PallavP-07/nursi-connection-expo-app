@@ -1,11 +1,26 @@
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, StatusBar, SafeAreaView } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { router } from "expo-router";
+import { useNavigation } from "@react-navigation/native";
+import { useLayoutEffect } from "react";
 
 const ContactUs = () => {
+    const navigation = useNavigation();
+  
+    useLayoutEffect(()=>{
+      navigation.getParent()?.setOptions({
+        tabBarStyle: { display: 'none' },
+      });
+      return () => {
+        navigation.getParent()?.setOptions({
+          tabBarStyle: undefined, 
+        });
+      };
+    },[navigation]);
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
+       <StatusBar backgroundColor="#007bff" barStyle="light-content" />
       {/* Header with Back Button */}
       <View style={styles.headerContainer}>
         <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
@@ -28,7 +43,7 @@ const ContactUs = () => {
         <Text style={styles.label}>Address</Text>
         <Text style={styles.info}>123, Healthcare Street, New York, USA</Text>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 

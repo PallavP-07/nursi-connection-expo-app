@@ -59,19 +59,20 @@ const SignIn = () => {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={styles.container}
     >
-      <LinearGradient style={styles.background} colors={["#1856d9", "#030B4A"]}>
+      <LinearGradient style={styles.background} colors={["#090961", "#2156B8"]}>
         <ScrollView contentContainerStyle={styles.scrollContainer}>
           <Stack.Screen options={{ headerShown: false }} />
 
           {/* Logo Section */}
           <View style={styles.logoContainer}>
             <Image
-              source={require("../../assets/images/mainLogo.png")}
+              source={require("../../assets/images/LoginLogo.png")}
               style={styles.logo}
               resizeMode="contain"
             />
           </View>
-          <Text style={styles.welcome_message}>Welcome Back! Login here</Text>
+          <Text style={styles.welcome_message}>Welcome Back! </Text>
+          <Text style={styles.welcome_message}>Login here</Text>
 
           {/* Input Fields */}
           <View style={styles.inputContainer}>
@@ -134,13 +135,12 @@ export default SignIn;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
     justifyContent: "center",
+    alignItems:'center'
   },
   scrollContainer: {
     flexGrow: 1,
     justifyContent: "center",
-    alignItems: "center",
     padding: 30,
     width: "100%",
   },
@@ -152,18 +152,17 @@ const styles = StyleSheet.create({
     height: "100%",
   },
   welcome_message: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: "bold",
-    letterSpacing: 2,
+    letterSpacing: 3,
     color: "#ffff",
-    marginBottom: 20,
   },
   logoContainer: {
-    marginBottom: 10,
+    marginBottom: 30,
   },
   logo: {
-    width: 240,
-    height: 120,
+    width: 360,
+    height: 80,
   },
   inputContainer: {
     width: "100%",
@@ -173,10 +172,10 @@ const styles = StyleSheet.create({
     width: "100%",
     padding: 15,
     marginVertical: 16,
-    borderWidth: 3,
-    borderColor: "#b9b9b9",
-    borderRadius: 8,
-    backgroundColor: "#f1f1f1",
+    borderWidth: 2,
+    borderColor: "#3B7FFF",
+    borderRadius: 10,
+    backgroundColor: "#FFF2F2",
   },
   passwordContainer: {
     position: "relative",
@@ -191,28 +190,33 @@ const styles = StyleSheet.create({
     bottom: 30,
   },
   button: {
-    backgroundColor: "#007bff",
+    backgroundColor: "#3B7FFF",
     paddingVertical: 15,
     paddingHorizontal: 40,
-    borderRadius: 8,
+    borderRadius: 50,
     alignItems: "center",
     width: "100%",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.5,
+    shadowColor:"#000000",
+    shadowRadius: 2,
+    elevation: 3,
   },
   disabledButton: {
     backgroundColor: "#b0c4de", // Light gray when disabled
   },
   buttonText: {
     color: "#fff",
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: "bold",
   },
   forgotBtn: {
     alignSelf: "flex-end",
-    marginVertical: 2,
+    marginVertical: 3,
   },
   forgotBtnTxt: {
     color: "#fff",
-    fontSize: 16,
+    fontSize: 18,
     textAlign: "right",
   },
   loader: {
