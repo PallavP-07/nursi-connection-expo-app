@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   SafeAreaView,
+  StatusBar,
 } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { router } from "expo-router";
@@ -26,6 +27,7 @@ const ChangePassword = () => {
 
   return (
     <SafeAreaView style={styles.container}>
+        <StatusBar backgroundColor="#F8F9FA" barStyle="dark-content" />
       {/* Back Button */}
       <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
         <Ionicons name="arrow-back" size={24} color="#333" />
@@ -81,12 +83,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#f9f9f9",
-    padding: 20,
+    padding: 40,
     justifyContent: "center",
   },
   backButton: {
     position: "absolute",
-    top: 20,
+    top: 40,
     left: 20,
     padding: 10,
   },
@@ -101,7 +103,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#fff",
     borderRadius: 8,
-    paddingHorizontal: 15,
+    paddingHorizontal: 20,
     paddingVertical: 10,
     marginBottom: 15,
     borderWidth: 1,

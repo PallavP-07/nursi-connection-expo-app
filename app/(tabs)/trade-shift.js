@@ -512,7 +512,7 @@ const TradeShift = () => {
                   {/* Select Colleague - Now second as requested */}
                   <View style={styles.formGroup}>
                     <Text style={styles.formLabel}>Select Colleague</Text>
-                    <View style={{ zIndex: 2000 }}>
+                    <View style={{ zIndex: 5000 }}>
                       <DropDownPicker
                         open={userDropdownOpen}
                         value={selectedUser?.id}
@@ -534,8 +534,8 @@ const TradeShift = () => {
                         selectedItemLabelStyle={styles.dropdownSelectedItemLabel}
                         ArrowDownIconComponent={() => <Ionicons name="chevron-down" size={18} color="#64748b" />}
                         ArrowUpIconComponent={() => <Ionicons name="chevron-up" size={18} color="#64748b" />}
-                        zIndex={2000}
-                        zIndexInverse={2000}
+                        zIndex={5000}
+                        zIndexInverse={5000}
                       />
                     </View>
                   </View>

@@ -22,13 +22,6 @@ import { getNurseDetailsAPI } from "../../api/authApi"
 import Toast from "react-native-toast-message"
 import ToastConfig from "../../components/ToastConfig"
 import showToast from "../../utils/showToast"
-import {
-  useFonts,
-  Poppins_500Medium,
-  Poppins_400Regular,
-  Poppins_600SemiBold,
-  Poppins_700Bold,
-} from "@expo-google-fonts/poppins"
 import { router } from "expo-router"
 import { LinearGradient } from "expo-linear-gradient"
 
@@ -41,20 +34,28 @@ const allShiftData = Array.from({ length: 15 }, (_, index) => ({
 
 // Colors for Shift Types
 const shiftColors = {
-  N: ["#5E60CE", "#4EA8DE"], // Night shift colors
-  M: ["#4EA8DE", "#48BFE3"], // Morning shift colors
+  Night: ["#5E60CE", "#4EA8DE"], // Night shift colors
+  Morning: ["#4EA8DE", "#48BFE3"], // Morning shift colors
 }
 
 const fallbackShiftData = [
   {
-    shift_time: "N",
+    shift_type_id: 1,
     full_date: moment().format("YYYY-MM-DD"),
-    shift_time_full: "Night (7PM-7AM)",
+    shift_time_full: "Night",
+    get_shift: {
+      id: 1,
+      label: "Night",
+    },
   },
   {
-    shift_time: "M",
+    shift_type_id: 2,
     full_date: moment().add(1, "days").format("YYYY-MM-DD"),
-    shift_time_full: "Morning (7AM-7PM)",
+    shift_time_full: "Morning",
+    get_shift: {
+      id: 2,
+      label: "Morning",
+    },
   },
 ]
 
@@ -75,13 +76,6 @@ const Home = () => {
   const [clockOutTime, setClockOutTime] = useState(null)
   const [totalHours, setTotalHours] = useState(0)
   const [workHistory, setWorkHistory] = useState([])
-
-  const [fontsLoaded] = useFonts({
-    Poppins_500Medium,
-    Poppins_400Regular,
-    Poppins_600SemiBold,
-    Poppins_700Bold,
-  })
 
   const getFilteredShifts = () => {
     let filteredData = [...shiftData]
@@ -139,6 +133,14 @@ const Home = () => {
     const dateNumber = moment(item.full_date).format("D") // 20, 21, etc.
     const monthShort = moment(item.full_date).format("MMM") // Mar, Apr, etc.
 
+    // Get the shift label from the nested object
+    const shiftLabel = item.get_shift?.label || item.shift_time_full
+    // Get first letter for the badge
+    const shiftInitial = shiftLabel.charAt(0)
+
+    // Get colors based on shift label
+    const shiftColorKey = shiftLabel in shiftColors ? shiftLabel : "Morning"
+
     const callToastMsg = () => {
       showToast("success", "Your Shift Assigned Successfully!🎉 ", "top")
     }
@@ -159,7 +161,7 @@ const Home = () => {
             style={[
               styles.dateContainer,
               {
-                backgroundColor: `${shiftColors[item.shift_time][1]}20`, // 20% opacity
+                backgroundColor: `${shiftColors[shiftColorKey][1]}20`, // 20% opacity
               },
             ]}
           >
@@ -170,8 +172,8 @@ const Home = () => {
 
           <View style={styles.shiftInfo}>
             <View style={styles.shiftTypeContainer}>
-              <View style={[styles.shiftTypeBadge, { backgroundColor: shiftColors[item.shift_time][0] }]}>
-                <Text style={styles.shiftTypeText}>{item.shift_time}</Text>
+              <View style={[styles.shiftTypeBadge, { backgroundColor: shiftColors[shiftColorKey][0] }]}>
+                <Text style={styles.shiftTypeText}>{shiftInitial}</Text>
               </View>
               <Text style={styles.shiftTime}>{item.shift_time_full}</Text>
             </View>
@@ -221,14 +223,23 @@ const Home = () => {
       if (!authToken) return
       try {
         const response = await getNurseDetailsAPI(authToken)
+
         if (response.status && response.data) {
           setNurseDetails(response.data)
-          setShiftData(response.data.all_shift_data)
+          // Make sure we're setting the shift data correctly
+          if (Array.isArray(response.data.all_shift_data)) {
+            setShiftData(response.data.all_shift_data)
+            console.log("Shift data loaded:", response.data.all_shift_data)
+          } else {
+            console.log("Using fallback shift data")
+            setShiftData(fallbackShiftData)
+          }
         } else {
           setShiftData(fallbackShiftData)
         }
       } catch (error) {
-        console.log(error)
+        console.log("Error fetching nurse details:", error)
+        setShiftData(fallbackShiftData)
       }
     }
     fetchNurseDetails()
@@ -432,9 +443,6 @@ const Home = () => {
                 arrowColor: "#4EA8DE",
                 monthTextColor: "#4EA8DE",
                 indicatorColor: "#4EA8DE",
-                textDayFontFamily: "Poppins_400Regular",
-                textMonthFontFamily: "Poppins_600SemiBold",
-                textDayHeaderFontFamily: "Poppins_500Medium",
               }}
               onDayPress={(day) => {
                 setSelectedDate(day.dateString === selectedDate ? "" : day.dateString)
@@ -495,7 +503,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     // backgroundColor: "#F8F9FA",
-    marginHorizontal:20,
+    marginHorizontal: 20,
     paddingTop: Platform.OS === "android" ? 20 : 0,
   },
   loadingContainer: {
@@ -529,19 +537,17 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "#2D3748",
     marginBottom: 2,
-    fontFamily: "Poppins_600SemiBold",
   },
   nurseRole: {
     fontSize: 14,
     color: "#718096",
-    fontFamily: "Poppins_400Regular",
   },
   notificationButton: {
     position: "relative",
     width: 40,
     height: 40,
     borderRadius: 20,
-    marginRight:10,
+    marginRight: 10,
     backgroundColor: "#EDF2F7",
     justifyContent: "center",
     alignItems: "center",
@@ -599,7 +605,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
     color: "#1E293B",
-    fontFamily: "Poppins_600SemiBold",
   },
   totalHoursContainer: {
     flexDirection: "row",
@@ -609,13 +614,11 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     color: "#1E293B",
-    fontFamily: "Poppins_700Bold",
   },
   totalHoursLabel: {
     fontSize: 12,
     color: "#94A3B8",
     marginLeft: 4,
-    fontFamily: "Poppins_400Regular",
   },
   clockTimesRow: {
     flexDirection: "row",
@@ -627,14 +630,13 @@ const styles = StyleSheet.create({
   clockTimeLabel: {
     fontSize: 12,
     color: "#94A3B8",
-    fontFamily: "Poppins_500Medium",
+
     marginBottom: 2,
   },
   clockTimeValue: {
     fontSize: 14,
     fontWeight: "600",
     color: "#1E293B",
-    fontFamily: "Poppins_600SemiBold",
   },
   clockButtonsRow: {
     flexDirection: "row",
@@ -660,7 +662,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "600",
     marginLeft: 8,
-    fontFamily: "Poppins_600SemiBold",
   },
   // Work History Accordion Styles
   historySection: {
@@ -705,7 +706,6 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     color: "#4A5568",
     marginLeft: 6,
-    fontFamily: "Poppins_500Medium",
   },
   historyTimes: {
     flexDirection: "row",
@@ -719,13 +719,11 @@ const styles = StyleSheet.create({
   historyTimeLabel: {
     fontSize: 12,
     color: "#718096",
-    fontFamily: "Poppins_400Regular",
   },
   historyTimeValue: {
     fontSize: 14,
     fontWeight: "500",
     color: "#2D3748",
-    fontFamily: "Poppins_500Medium",
   },
   historyDivider: {
     width: 1,
@@ -741,7 +739,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#4EA8DE",
     fontWeight: "600",
-    fontFamily: "Poppins_600SemiBold",
   },
   // Section Title
   sectionTitle: {
@@ -749,7 +746,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#2D3748",
     marginLeft: 8,
-    fontFamily: "Poppins_600SemiBold",
   },
   scheduleHeader: {
     flexDirection: "row",
@@ -797,12 +793,10 @@ const styles = StyleSheet.create({
   filterText: {
     fontSize: 14,
     color: "#4A5568",
-    fontFamily: "Poppins_400Regular",
   },
   activeFilterText: {
     color: "#4EA8DE",
     fontWeight: "500",
-    fontFamily: "Poppins_500Medium",
   },
   activeFilterIndicator: {
     flexDirection: "row",
@@ -858,18 +852,15 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "500",
     color: "#4A5568",
-    fontFamily: "Poppins_500Medium",
   },
   dateText: {
     fontSize: 22,
     fontWeight: "bold",
     color: "#2D3748",
-    fontFamily: "Poppins_600SemiBold",
   },
   monthText: {
     fontSize: 12,
     color: "#4A5568",
-    fontFamily: "Poppins_400Regular",
   },
   shiftInfo: {
     flex: 1,
@@ -889,13 +880,11 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontSize: 12,
     fontWeight: "bold",
-    fontFamily: "Poppins_600SemiBold",
   },
   shiftTime: {
     fontSize: 14,
     color: "#4A5568",
     fontWeight: "500",
-    fontFamily: "Poppins_500Medium",
   },
   shiftAction: {
     flexDirection: "row",
@@ -934,7 +923,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "600",
     marginRight: 4,
-    fontFamily: "Poppins_600SemiBold",
   },
   emptyState: {
     flex: 1,
@@ -949,14 +937,12 @@ const styles = StyleSheet.create({
     color: "#2D3748",
     marginTop: 16,
     marginBottom: 8,
-    fontFamily: "Poppins_600SemiBold",
   },
   emptyStateMessage: {
     fontSize: 14,
     color: "#718096",
     textAlign: "center",
     marginBottom: 24,
-    fontFamily: "Poppins_400Regular",
   },
   resetButton: {
     paddingHorizontal: 16,
@@ -968,6 +954,5 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontSize: 14,
     fontWeight: "500",
-    fontFamily: "Poppins_500Medium",
   },
 })

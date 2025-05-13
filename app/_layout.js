@@ -1,28 +1,28 @@
 import { useContext, useEffect } from "react";
-import {Stack, router } from "expo-router";
- import { AuthContext, AuthProvider } from "../context/authContext";
+import { Slot, router } from "expo-router";
+import { AuthContext, AuthProvider, useAuth } from "../context/authContext";
 
 export default function RootLayout() {
   return (
     <AuthProvider>
-      <AuthHandler />
+      <RootLayoutNav />
     </AuthProvider>
   );
-};
+}
 
-function AuthHandler() {
-     const { authToken, loading } = useContext(AuthContext);
+function RootLayoutNav() {
+  const { authToken, loading } = useContext(AuthContext);
 
   useEffect(() => {
-    if (!authToken) {
+    if (!loading && !authToken) {
+      // Only redirect if we've finished loading and there's no auth token
       router.replace("/(auth)/sign-in");
+    } else if (!loading && authToken) {
+      // If user is authenticated, ensure they're in the tabs
+      router.replace("/(tabs)");
     }
-  }, [authToken]);
+  }, [authToken, loading]);
 
-  return (
-    <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="(auth)" />
-      <Stack.Screen name="(tabs)" />
-    </Stack>
-  );
+  // The critical change: Always render the Slot component
+  return <Slot />;
 }

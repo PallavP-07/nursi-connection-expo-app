@@ -11,6 +11,8 @@ import {
   ScrollView,
   Platform,
   ActivityIndicator,
+  SafeAreaView,
+  StatusBar,
 } from "react-native";
 import CustomModel from "../../components/CustomModel";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -397,7 +399,8 @@ const LeaveDetails = () => {
   );
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
+        <StatusBar backgroundColor="#F8F9FA" barStyle="dark-content" />
       <View style={styles.header}>
         <Text style={styles.title}>Leave Management</Text>
         <TouchableOpacity style={styles.refreshButton} onPress={handleRefresh}>
@@ -448,12 +451,6 @@ const LeaveDetails = () => {
               ]}
             >
               {status}
-              {status !== "All" && (
-                <Text style={styles.tabCount}>
-                  {" "}
-                  {leaves.filter(item => item.status === status).length}
-                </Text>
-              )}
             </Text>
           </TouchableOpacity>
         ))}
@@ -492,7 +489,7 @@ const LeaveDetails = () => {
           }
         />
       </Modal>
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -563,23 +560,24 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginHorizontal: 20,
     marginBottom: 16,
-    padding: 4,
-    height: 44,
+    padding: 5,
+    height: 45,
     alignItems: "center",
     position: "relative",
   },
   activeTab: {
     position: "absolute",
-    height: "85%",
+    height: 38,
     backgroundColor: "#ffffff",
-    borderRadius: 8,
+    borderRadius: 10,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    elevation: 2,
-    top: "7.5%",
-    left: 4,
+    elevation: 3,
+    top:2,
+    marginHorizontal:2,
+    left:1,
   },
   tabButton: {
     flex: 1,
@@ -756,14 +754,14 @@ const styles = StyleSheet.create({
     color: "#64748b",
     textAlign: "center",
     paddingHorizontal: 32,
+    alignItems:"center"
   },
   // Form styles
   formScrollView: {
-    maxHeight: 600,
+    // maxHeight: 600,
   },
   formContainer: {
-    padding: 16,
-    width: width - 40,
+    padding: 20,
   },
   formTitle: {
     fontSize: 20,
